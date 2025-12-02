@@ -193,7 +193,8 @@ class Explosion:
             self.ex_img = self.ex_imgs[(self.life // 10) % 2]
             screen.blit(self.ex_img, self.rct)
 
-        
+
+
 def main():
     pg.display.set_caption("たたかえ！こうかとん")
     screen = pg.display.set_mode((WIDTH, HEIGHT))    
@@ -246,7 +247,8 @@ def main():
                         explosion = Explosion(bomb.rct.center)
                         explosions.append(explosion)
         bombs = [bomb for bomb in bombs if bomb is not None]
-        beams = [beam for beam in beams if beam is not None and check_bound(beam.rct) == (True, True)]  # ビームリストに対して，要素がNoneでないものだけのリストに更新, 画面の範囲外に出たらリストから削除する
+        # ビームリストに対して，要素がNoneでないものだけのリストに更新, 画面の範囲外に出たらリストから削除する
+        beams = [beam for beam in beams if beam is not None and check_bound(beam.rct) == (True, True)]  
         explosions = [explosion for explosion in explosions if explosion.life > 0]
         
         key_lst = pg.key.get_pressed()
