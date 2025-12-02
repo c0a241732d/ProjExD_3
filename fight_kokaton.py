@@ -173,10 +173,14 @@ def main():
                     # 爆弾とビームが衝突した際にBeamインスタンス，Bombインスタンスを消滅
                     beam = None
                     bomb = None
+                    # こうかとんが喜ぶ
+                    bird.change_img(9, screen)
+                    pg.display.update()
 
 
         key_lst = pg.key.get_pressed()
-        bird.update(key_lst, screen)
+        if bird is not None:
+            bird.update(key_lst, screen)
         if beam is not None:  # ビームが存在していたら
             beam.update(screen)  
         if bomb is not None: 
