@@ -147,13 +147,19 @@ class Score:
     スコアに関するクラス
     """
     def __init__(self):
+        """
+        スコア文字列を表示する
+        """
         self.fonto = pg.font.SysFont("hgp創英角ﾎﾟｯﾌﾟ体", 30)
         self.score = 0
         self.img = self.fonto.render("表示させる文字列", 0, (0, 0, 255))
         self.yoko = 100
         self.tate = HEIGHT - 50
 
-    def update(self, screen):
+    def update(self, screen: pg.Surface):
+        """
+        現在のスコアを表示させる
+        """
         self.img = self.fonto.render(f"スコア：{self.score}", 0, (0, 0, 255))
         screen.blit(self.img, [self.yoko, self.tate])
 
@@ -171,6 +177,7 @@ def main():
         bombs.append(bomb)
     # bombs = [Bomb((255, 0, 0), 10), for i in range(NUM_OF_BOMBS)]  # 内包表記
     score = Score()
+    beams = []
     clock = pg.time.Clock()
     tmr = 0
     while True:
@@ -179,7 +186,8 @@ def main():
                 return
             if event.type == pg.KEYDOWN and event.key == pg.K_SPACE:
                 # スペースキー押下でBeamクラスのインスタンス生成
-                beam = Beam(bird)            
+                beam = Beam(bird)
+                beams.append(beam)            
         screen.blit(bg_img, [0, 0])
         
         for b, bomb in enumerate(bombs):
@@ -192,23 +200,24 @@ def main():
                 pg.display.update()
                 time.sleep(1)
                 return
-        
-        for b, bomb in enumerate(bombs):
-            if beam is not None:
-                if beam.rct.colliderect(bomb.rct):
-                    # 爆弾とビームが衝突した際にBeamインスタンス，Bombインスタンスを消滅
-                    beam = None
-                    bombs[b] = None
-                    # こうかとんが喜ぶ
-                    bird.change_img(9, screen)
-                    pg.display.update()
-                    score.score += 1
-        bombs = [bomb for bomb in bombs if bomb is not None]
 
+        for b, bomb in enumerate(bombs):
+            for be, beam in enumerate(beams):  # リストの要素1つずつに対して爆弾と衝突判定し，衝突した要素はNoneとする
+                if bomb is not None and beam is not None:
+                    if beam.rct.colliderect(bomb.rct):
+                        # 爆弾とビームが衝突した際にBeamインスタンス，Bombインスタンスを消滅
+                        beams[be] = None
+                        bombs[b] = None
+                        # こうかとんが喜ぶ
+                        bird.change_img(9, screen)
+                        pg.display.update()
+                        score.score += 1
+        bombs = [bomb for bomb in bombs if bomb is not None]
+        beams = [beam for beam in beams if beam is not None and check_bound(beam.rct) == (True, True)]  # ビームリストに対して，要素がNoneでないものだけのリストに更新, 画面の範囲外に出たらリストから削除する
 
         key_lst = pg.key.get_pressed()
         bird.update(key_lst, screen)
-        if beam is not None:  # ビームが存在していたら
+        for beam in beams:
             beam.update(screen)  
         for bomb in bombs:
             bomb.update(screen)
