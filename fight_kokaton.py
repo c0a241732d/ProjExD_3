@@ -142,6 +142,22 @@ class Bomb:
         screen.blit(self.img, self.rct)
 
 
+class Score:
+    """
+    スコアに関するクラス
+    """
+    def __init__(self):
+        self.fonto = pg.font.SysFont("hgp創英角ﾎﾟｯﾌﾟ体", 30)
+        self.score = 0
+        self.img = self.fonto.render("表示させる文字列", 0, (0, 0, 255))
+        self.yoko = 100
+        self.tate = HEIGHT - 50
+
+    def update(self, screen):
+        self.img = self.fonto.render(f"スコア：{self.score}", 0, (0, 0, 255))
+        screen.blit(self.img, [self.yoko, self.tate])
+
+    
 def main():
     pg.display.set_caption("たたかえ！こうかとん")
     screen = pg.display.set_mode((WIDTH, HEIGHT))    
@@ -154,6 +170,7 @@ def main():
         bomb = Bomb((255, 0, 0), 10)
         bombs.append(bomb)
     # bombs = [Bomb((255, 0, 0), 10), for i in range(NUM_OF_BOMBS)]  # 内包表記
+    score = Score()
     clock = pg.time.Clock()
     tmr = 0
     while True:
@@ -185,6 +202,7 @@ def main():
                     # こうかとんが喜ぶ
                     bird.change_img(9, screen)
                     pg.display.update()
+                    score.score += 1
         bombs = [bomb for bomb in bombs if bomb is not None]
 
 
@@ -194,6 +212,7 @@ def main():
             beam.update(screen)  
         for bomb in bombs:
             bomb.update(screen)
+        score.update(screen)
         pg.display.update()
         tmr += 1
         clock.tick(50)
